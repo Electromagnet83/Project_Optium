@@ -1,0 +1,26 @@
+{
+    "type": "java",
+    "name": "Launch Current File",
+    "request": "launch",
+    "mainClass": "${file}",
+    "projectName": "projectoptium-backend",
+    "classpath": [
+        "${workspaceFolder}/lib/*"
+    ],
+    "configurations": [
+        {
+            "type": "java",
+            "name": "SimpleHttpServer",
+            "request": "launch",
+            "mainClass": "com.yourcompany.SimpleHttpServer",
+            "projectName": "projectoptium-backend"
+        },
+        {
+            "type": "java",
+            "name": "EmailLookupService",
+            "request": "launch",
+            "mainClass": "com.yourcompany.EmailLookupService",
+            "projectName": "projectoptium-backend"
+        }
+    ]
+}

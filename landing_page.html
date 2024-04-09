@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Lookup and Removal</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            text-align: center; /* Center content */
+            font-family: Arial, sans-serif;
+        }
+        #container {
+            margin: 20px auto; /* Center the container */
+            width: 90%;
+            max-width: 600px; /* Max width for the container */
+            display: inline-block;
+            text-align: left; /* Align content inside the container to the left */
+        }
+        .input-group {
+            text-align: center; /* Center the input and buttons */
+        }
+        input[type="email"], button {
+            margin: 10px 5px; /* Add some space around inputs and buttons */
+            padding: 10px;
+            width: calc(50% - 12px); /* Adjust width here */
+            box-sizing: border-box;
+            display: inline-block; /* Align inputs and buttons inline */
+        }
+        #removeButton { 
+            display: none; /* Initially hide the remove button */
+        }
+    </style>
+</head>
+<body>
+    <h2>Opt-Out Search and Destroy Tool</h2>
+    <input type="email" id="emailInput" placeholder="Enter email address" required
+           pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$">
+    <button onclick="checkEmail()">Search</button>
+    <button id="removeButton" onclick="removeEmail()">Delete Record</button>
+    <p id="resultMessage"></p>
+    <img src="http://10.0.0.201/dynaconnections_logo.png" alt="DC Logo" width="650" height="155">
+
+    <script>
+    function checkEmail() {
+        const emailInput = document.getElementById('emailInput');
+        if (!emailInput.checkValidity()) {
+            document.getElementById('resultMessage').textContent = 'Please enter a valid email address.';
+            return;
+        }
+
+        const email = emailInput.value;
+        const url = 'http://10.0.0.201:8000/email-lookup';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+            body: email,
+        })
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('resultMessage').textContent = data;
+            if (data === "Email found.") {
+                document.getElementById('removeButton').style.display = 'inline'; // Show the remove button
+            } else {
+                document.getElementById('removeButton').style.display = 'none'; // Hide the remove button
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            document.getElementById('resultMessage').textContent = 'An error occurred.';
+        });
+    }
+
+    function removeEmail() {
+    const email = document.getElementById('emailInput').value;
+    const url = 'http://10.0.0.201:8000/remove-email';
+
+    // Add confirmation dialog
+    if (!confirm("Warning: This action cannot be undone. \n\nAre you sure you want to delete this email record from the database?")) {
+        return; // Stop the function if the user clicks "Cancel"
+    }
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain',
+        },
+        body: email,
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('resultMessage').textContent = data;
+        if (data.includes("successfully removed")) {
+            // Hide the remove button and clear the input field after successful removal
+            document.getElementById('removeButton').style.display = 'none';
+            document.getElementById('emailInput').value = '';
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        document.getElementById('resultMessage').textContent = 'An error occurred.';
+    });
+}
+
+    </script>
+</body>
+</html>
